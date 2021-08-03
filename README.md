@@ -88,21 +88,27 @@ A section beginning with an octothorpe `#` is composed of 3 parts:
 
 ```
 # a b 
-## d e
-## f g
+## c d
+## e f
 ```
 
 is converted to 
 ```
-{ a b { d e } { f g }}
+{ a b { c d } { e f }}
 ```
 using a simple algorithm, see md2brace.html and support.js.
 
 1. Set two counters to 0. (depth and openbrackets).
 2. When a `#` is encountered, determine new depth as the number of `#`s. If newdepth > depth, emit an open brace `{`, if newdepth === depth emit close and open `}\n{`, otherwise panic. Set depth to newdepth, increment openbrackets by number of `{` that were added.
 3. At the end, emit one '}' for each openbracket.
-## Github
 
+No judgement is made about the contents of a,b,c,d,e,f. (That is left up to other tools).
+
+# Github
+
+[md2brace](https://github.com/guitarvydas/md2brace)
+
+# See Also
 
 [Glue Tool](https://guitarvydas.github.io/2021/04/11/Glue-Tool.html)
 [Glue Manual](https://guitarvydas.github.io/2021/03/24/Glue-Manual.html)
