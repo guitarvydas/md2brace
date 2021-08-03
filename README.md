@@ -100,7 +100,7 @@ using a simple algorithm, see md2brace.html and support.js.
 
 1. Set two counters to 0. (depth and openbrackets).
 2. When a `#` is encountered, determine new depth as the number of `#`s. If newdepth > depth, emit an open brace `{`, if newdepth === depth emit close and open `}\n{`, otherwise panic. Set depth to newdepth, increment openbrackets by number of `{` that were added.
-3. At the end, emit one '}' for each openbracket
+3. At the end, emit one '}' for each openbracket.
 ## Github
 
 

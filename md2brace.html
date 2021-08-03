@@ -1,0 +1,125 @@
+!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+<h1>Code Markdown to Bash Transpiler Workbench</h1>
+
+<!-- code markdown to pseudo -->
+
+<p>code markdown grammar:</p>
+<textarea id="cmdgrammar" rows="10" cols="90" placeholder="code markdown grammar" style="background-color:oldlace">
+ToBrace {
+
+main = line+
+line = indent? spc? toEOL+ linetail
+linetail =   newline toIndent* -- withContent
+           | newline? end -- withoutContent
+indent = indentChar+
+indentChar = ("#" | "*")
+toIndent = ~indentChar any
+toEOL = ~newline any
+
+newline = "\n"
+spc = " "
+}
+</textarea>
+
+<p>code markdown semantics:</p>
+<textarea id="cmdsemantics" rows="10" cols="90" placeholder="semantics" style="background-color:oldlace;">
+main [@lines] = {{ reset (); }} [[${lines}${closebrackets ()}]]
+line [@indent @spc @head tail] = [[${emitbrackets (indent)}${head}${tail}]]
+linetail_withContent [nl @cs] = [[${nl}${cs}]]
+linetail_withoutContent [@nl e] = [[\n]]
+indent [@indents] = [[${indents}]]
+indentChar [c] = [[${c}]]
+toIndent [c] = [[${c}]]
+toEOL [c] = [[${c}]]
+newline [c] = [[${c}]] 
+spc [c] = [[${c}]]
+</textarea>
+
+<p>code markdown source:</p>
+<textarea id="cmdsource" rows="17" cols="90" placeholder="notation test" style="background-color:oldlace;">
+# _containment_
+
+## _fb pipeline_
+	allContains1
+	printAllDeepContains
+	printAllDirectContains
+
+
+
+## _details_
+### allContains1
+	load fb
+	load onSameDiagram
+	load contain1
+### printAllDeepContains
+	load fb
+	load onSameDiagram
+	load contains2
+### printAllDirectContains
+	load fb
+	load onSameDiagram
+	load contains3
+</textarea>
+
+<p>transpiled:</p>
+<textarea id="cmdtranspiled" rows="17" cols="90" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="cmdstatus" > READY </p>
+
+<!-- end code markdown to pseudo -->
+
+
+
+<br>
+<button onclick="generate ()">Generate</button>
+<script src="../scnwb/ohm.js"></script>
+<script src="../scnwb/glue.js"></script>
+<script src="../scnwb/scope.js"></script>
+<script src="support.js"></script>
+<script>
+
+
+  function pass (grammar, semantics, source, output, status) {
+      let scnGrammar = document.getElementById(grammar).value;
+      let scnSemantics = document.getElementById(semantics).value;
+      let notationSource = document.getElementById(source).value;
+      // glueGrammar and glueSemantics defined in ../scnwb/
+      let generatedSCNSemantics = transpiler (scnSemantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+          document.getElementById(status).innerHTML = "FAILED";
+          let semObject = eval('(' + generatedSCNSemantics + ')');
+          document.getElementById (output).value = semObject;
+          let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+          document.getElementById(output).value = tr;
+          document.getElementById(status).innerHTML = "OK";
+      }
+       catch (err) {
+          document.getElementById(status).innerHTML = err;
+       }
+  }
+
+  function md2pseudo () {
+      pass ('cmdgrammar', 'cmdsemantics', 'cmdsource', 'cmdtranspiled', 'cmdstatus');
+  }
+
+  function generate () {
+      md2pseudo ();
+  }
+  
+  </script>
+</body>
+</html>
+
